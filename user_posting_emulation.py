@@ -17,7 +17,6 @@ class AWSDBConnector:
         aws_db_creds_path = 'aws_db_creds.yaml'
         with open(aws_db_creds_path, 'r') as file:
             aws_db_creds = yaml.safe_load(file)
-        print(aws_db_creds['HOST'])
         self.HOST = aws_db_creds['HOST']
         self.USER = aws_db_creds['USER']
         self.PASSWORD = aws_db_creds['PASSWORD']
@@ -118,9 +117,9 @@ def run_infinite_post_data_loop():
 
 
         user_response = requests.request("POST", user_invoke_url, headers=headers, data=user_payload)
-        print(f"Pin: {pin_response}")
-        print(f"Geo: {geo_response}")
-        print(f"User: {user_response}")    
+        #print(f"Pin: {pin_response}")
+        #print(f"Geo: {geo_response}")
+        #print(f"User: {user_response}")    
                           
             # looped code is causing issues
             #for result, schema, topic, invokeURL in zip(result_list, schema_list, topic_list, invokeURL_list): 
