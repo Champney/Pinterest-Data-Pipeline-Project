@@ -70,13 +70,14 @@ Now; from the command line, the user can simply execute either of the following 
     - _(or alternatively run `run %user_posting_emulation.py` from a Jupyter notebook)_
     
     to batch load via S3. Data will be uploaded to the bucket until the process is manually stopped or encounters an error.
+
    ![alt text](image.png)
 
 
 - In your Databricks workspace, execute the entire `databricks-code-ipynb` notebook. This will perform the necessary cleaning transformations on the data before calculating insights as required. The dataframes are stored as objects in the notebook.
 
     _Note: This databricks notebook may be executed regularly & automatically by uploading the associated DAG py file (12885f560a0b_dag.py) to Airflow. The `username`, `databricks_notebok_path` and `databricks_cluster_id` variables at the beginning of the file can be modified if the user intends on accessing a different notebook under a different account._
-<picture here>
+
 
 #### Option 2: Continuous Streaming through Kinesis
 
@@ -88,11 +89,12 @@ Now; from the command line, the user can simply execute either of the following 
 
     to stream continuously through Kinesis
 - In your Databricks workspace, execute the entire `databricks-streaming-notebook.ipynb` notebook. If running correctly, data will appear Delta tables in your 'Data' or 'Catalog' tab in Databricks, this will run continuously until the process is stopped manually or encounters an error. The *py file* on the command line __and__ the *ipynb notebook* on Databricks **must both be running at the same time** or the stream will be interrupted.
-![alt text](image-1.png)
-![alt text](image-2.png)
-<picture here>
 
-<ADD USAGE INSTRUCTIONS LATER>
+![alt text](image-1.png)
+
+![alt text](image-2.png)
+
+
 
 ### License Information
 
