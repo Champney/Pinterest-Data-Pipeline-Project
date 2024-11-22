@@ -2,7 +2,7 @@
 
 ### Project Description
 
-The aim of this project is to use various AWS resources to create a functional data pipeline for ETL of three parallel streams of sample data with specified schemas. I've done this by initially batch-loading the data into an S3 bucket, from where I was able to extract it into Databricks and process it as needed using PySpark. With the data transformed, I've continued processing it with Spark to extract meaningful insights.
+The aim of this project is to use various AWS resources to create a functional data pipeline for ETL of three parallel streams of sample data with specified schemas. IThis is achieved by initially batch-loading the data into an S3 bucket, from where it is extracted into Databricks and processed as neededed using PySpark. The data is then processed further using Spark to pull specific meaningful insights.
 
 
 
@@ -27,17 +27,15 @@ SSH Keypair ID: <ssh-keypair-id>
 ```
 
 `user_posting_emulation.py` : A provided py file that, when run, connects to a SQL database and outputs pin, geo and user data continuously until it is stopped. This has been modified to send data to an S3 bucket and output the API response rather than print the records.
-<picture of python output of records>
-<picture of python output of API response>
 
-`databricks-code.ipynb` : Working code snippets from Databricks for importing data from S3 into seperate Dataframes, cleaning the data and performing the specified queries
+`databricks-code.ipynb` : Working code snippets from Databricks for importing data from S3 into seperate Dataframes, cleaning the data and performing the specified queries.
 
 `user-posting-emulation-streaming.py` : A modified version of 
-`user-posting-emulation.py`, which sends the data to Kinesis instead of an S3 bucket
+`user-posting-emulation.py`, which sends the data to Kinesis instead of an S3 bucket.
 
 `databricks-streaming-code.ipynb` : More working code snippets from Databricks, similar to `databricks-code.ipynb`; except instead of batch-loading, it's written to continuously read in data from Kinesis and subsequently write that data to a Delta table before transforming it as required.
 
-`12885f560a0b_dag.py` : A Python DAG that may be uploaded to Airflow to run the Databricks batch loading notebook once per day
+`12885f560a0b_dag.py` : A Python DAG that may be uploaded to Airflow to run the Databricks batch loading notebook every 24 hours.
 
 ### Usage Instructions
 #### Prerequisites
@@ -49,13 +47,13 @@ SSH Keypair ID: <ssh-keypair-id>
 In order for everything to run smoothly, you should have the following (if you dont already, there are brief how-to guides in the wiki for creating most of these):
 
 - An AWS account
-- A .pem keypair file <(see 'Creating a .pem file')>
-- A working IAM authenticated MSK cluster
-- An EC2 client machine
-- A Custom MSK plugin <(see 'Creating a Custom MSK plugin')>
-- An MSK connector for automatic saving to S3 from the MSK cluster <(see 'Creating an MSK connector')>
-- An API <(see 'Creating an API in API Gateway')>
-- A Kafka REST proxy integration method for the API <(see 'Creating a Kafka REST proxy integration method')>
+- A .pem keypair file (see [Creating a Keypair file & Connecting to an EC2 Instance](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/EC2:-Creating-a-Key-Pair-(.pem)-file-&-Connecting-to-an-EC2-Instance))
+- An IAM authenticated MSK cluster
+- An EC2 client machine with Kafka installed (see [Setting up Kafka & Configuring for AWS IAM cluster authentication](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/EC2:-Setting-up-Kafka-&-Configuring-for-AWS-IAM-cluster-authentication))
+- A Custom MSK plugin (see [Creating a Custom MSK plugin](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/Creating-a-Custom-MSK-plugin))
+- An MSK connector for automatic saving to S3 from the MSK cluster (see [Creating an MSK connector](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/Creating-an-MSK-connector#creating-an-msk-connector))
+- An API (see [Creating an API in API Gateway](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/Creating-an-API-in-API-Gateway))
+- A Kafka REST proxy integration method for the API (see [Creating a Kafka REST proxy integration method](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/Creating-a-Kafka-REST-proxy-integration-method))
 - A Databricks workspace
 - IAM roles with relevant access
 
@@ -84,11 +82,14 @@ Now; from the command line, the user can simply execute either of the following 
 
 - From the command line, execute 
     ```
-    user_posting_emulation_streaming.py
+   python3 user_posting_emulation_streaming.py
     ``` 
-to stream continuously through Kinesis
-- In your Databricks workspace, execute the entire `databricks-streaming-notebook.ipynb` notebook. If running correctly, data will appear Delta tables in your 'Data' or 'Catalog' tab in Databricks, this will run continuously until the process is stopped manually or encounters an error. **Both** the *py file* on the command line __as well as__ the *ipynb notebook* on Databricks **must both** be running at the same time or the stream will be interrupted.
+    - _(or alternatively run `run %user_posting_emulation_streaming.py` from a Jupyter notebook)_
 
+    to stream continuously through Kinesis
+- In your Databricks workspace, execute the entire `databricks-streaming-notebook.ipynb` notebook. If running correctly, data will appear Delta tables in your 'Data' or 'Catalog' tab in Databricks, this will run continuously until the process is stopped manually or encounters an error. The *py file* on the command line __and__ the *ipynb notebook* on Databricks **must both be running at the same time** or the stream will be interrupted.
+![alt text](image-1.png)
+![alt text](image-2.png)
 <picture here>
 
 <ADD USAGE INSTRUCTIONS LATER>
