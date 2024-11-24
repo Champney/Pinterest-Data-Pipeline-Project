@@ -52,7 +52,7 @@ In order for everything to run smoothly, you should have the following (if you d
 - An EC2 client machine with Kafka installed (see [Setting up Kafka & Configuring for AWS IAM cluster authentication](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/EC2:-Setting-up-Kafka-&-Configuring-for-AWS-IAM-cluster-authentication))
 - A Custom MSK plugin (see [Creating a Custom MSK plugin](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/Creating-a-Custom-MSK-plugin))
 - An MSK connector for automatic saving to S3 from the MSK cluster (see [Creating an MSK connector](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/Creating-an-MSK-connector#creating-an-msk-connector))
-- An API (see [Creating an API in API Gateway](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/Creating-an-API-in-API-Gateway))
+- An API (see [Creating an API with Kafka REST proxy integration method](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/API-Gateway:-Creating-an-API-with-Kafka-REST-proxy-integration-method))
 - A Kafka REST proxy integration method for the API (see [Creating a Kafka REST proxy integration method](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/Creating-a-Kafka-REST-proxy-integration-method))
 - A Databricks workspace
 - IAM roles with relevant access
@@ -76,7 +76,7 @@ Now; from the command line, the user can simply execute either of the following 
 
 - In your Databricks workspace, execute the entire `databricks-code-ipynb` notebook. This will perform the necessary cleaning transformations on the data before calculating insights as required. The dataframes are stored as objects in the notebook.
 
-    _Note: This databricks notebook may be executed regularly & automatically by uploading the associated DAG py file (12885f560a0b_dag.py) to Airflow. The `username`, `databricks_notebok_path` and `databricks_cluster_id` variables at the beginning of the file can be modified if the user intends on accessing a different notebook under a different account._
+    _Note: This databricks notebook may be executed regularly & automatically by uploading the associated DAG py file (12885f560a0b_dag.py) to Airflow. The `username`, `databricks_notebook_path` and `databricks_cluster_id` variables at the beginning of the file can be modified if the user intends on accessing a different notebook under a different account._
 
 
 #### Option 2: Continuous Streaming through Kinesis
@@ -88,7 +88,7 @@ Now; from the command line, the user can simply execute either of the following 
     - _(or alternatively run `run %user_posting_emulation_streaming.py` from a Jupyter notebook)_
 
     to stream continuously through Kinesis
-- In your Databricks workspace, execute the entire `databricks-streaming-notebook.ipynb` notebook. If running correctly, data will appear Delta tables in your 'Data' or 'Catalog' tab in Databricks, this will run continuously until the process is stopped manually or encounters an error. The *py file* on the command line __and__ the *ipynb notebook* on Databricks **must both be running at the same time** or the stream will be interrupted.
+- In your Databricks workspace, execute the entire `databricks-streaming-notebook.ipynb` notebook. If running correctly, data will appear in Delta tables in your 'Data' or 'Catalog' tab in Databricks, this will run continuously until the process is stopped manually or encounters an error. The *py file* on the command line __and__ the *ipynb notebook* on Databricks **must both be running at the same time** or the stream will be interrupted.
 
 ![alt text](image-1.png)
 

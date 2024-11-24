@@ -2,10 +2,13 @@ from airflow import DAG
 from airflow.providers.databricks.operators.databricks import DatabricksSubmitRunOperator, DatabricksRunNowOperator
 from datetime import datetime, timedelta 
 
+username = '12885f560a0b'
+databricks_notebook_path = '/Users/davidjchampney@gmail.com/Pinterest Batch Data Notebook'
+databricks_cluster_id = '1108-162752-8okw8dgg'
 
 #Define params for Submit Run Operator
 notebook_task = {
-    'notebook_path': '/Users/davidjchampney@gmail.com/Pinterest Batch Data Notebook',
+    'notebook_path': databricks_notebook_path,
 }
 
 
@@ -16,7 +19,7 @@ notebook_params = {
 
 
 default_args = {
-    'owner': '12885f560a0b',
+    'owner': username,
     'depends_on_past': False,
     'email_on_failure': False,
     'email_on_retry': False,
@@ -25,7 +28,7 @@ default_args = {
 }
 
 
-with DAG('12885f560a0b_dag',
+with DAG(f'{username}_dag',
     # should be a datetime format
     start_date=datetime(2024, 10, 27),
     # check out possible intervals, should be a string
@@ -37,9 +40,8 @@ with DAG('12885f560a0b_dag',
 
     opr_submit_run = DatabricksSubmitRunOperator(
         task_id='submit_run',
-        # the connection we set-up previously
         databricks_conn_id='databricks_default',
-        existing_cluster_id='1108-162752-8okw8dgg',
+        existing_cluster_id=databricks_cluster_id,
         notebook_task=notebook_task
     )
     opr_submit_run

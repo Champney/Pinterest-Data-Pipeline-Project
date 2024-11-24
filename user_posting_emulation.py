@@ -9,6 +9,11 @@ from sqlalchemy import text
 import datetime
 import yaml
 random.seed(100)
+db_creds_path = 'db_creds.yaml'
+with open(db_creds_path, 'r') as file:
+    db_creds = yaml.safe_load(file)
+username = db_creds['AWS IAM Username']
+
 
 
 class AWSDBConnector:
@@ -22,7 +27,11 @@ class AWSDBConnector:
         self.PASSWORD = aws_db_creds['PASSWORD']
         self.DATABASE = aws_db_creds['DATABASE']
         self.PORT = aws_db_creds['PORT']
-        
+        db_creds_path = 'db_creds.yaml'
+        with open(db_creds_path, 'r') as file:
+            db_creds = yaml.safe_load(file)
+        self.api_stage = 'a-zA-Z0-9_'
+        aws_username = db_creds['AWS IAM Username']
     def create_db_connector(self):
         engine = sqlalchemy.create_engine(f"mysql+pymysql://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}?charset=utf8mb4")
         return engine
@@ -57,17 +66,10 @@ def run_infinite_post_data_loop():
             for row in user_selected_row:
                 user_result = dict(row._mapping)
                        
-            pin_invoke_url = "https://1yd64tc6fa.execute-api.us-east-1.amazonaws.com/a-zA-Z0-9_/topics/12885f560a0b.pin"
-            geo_invoke_url = "https://1yd64tc6fa.execute-api.us-east-1.amazonaws.com/a-zA-Z0-9_/topics/12885f560a0b.geo"
-            user_invoke_url = "https://1yd64tc6fa.execute-api.us-east-1.amazonaws.com/a-zA-Z0-9_/topics/12885f560a0b.user"
-            invokeURL_list = [pin_invoke_url, geo_invoke_url, user_invoke_url]
+            pin_invoke_url = f"https://1yd64tc6fa.execute-api.us-east-1.amazonaws.com/{self.api_stage}/topics/{self.aws_username}.pin"
+            geo_invoke_url = f"https://1yd64tc6fa.execute-api.us-east-1.amazonaws.com/{self.api_stage}/topics/{self.aws_username}.geo"
+            user_invoke_url = f"https://1yd64tc6fa.execute-api.us-east-1.amazonaws.com/{self.api_stage}/topics/{self.aws_username}.user"
             headers = {'Content-Type': 'application/vnd.kafka.json.v2+json'}
-            #print(pin_result)
-            #print(geo_result)
-            #print(user_result)
-            topic_list = ["pin", "geo", "user"]
-
-            result_list = [pin_result, geo_result, user_result]
             
             pin_schema = ["index", "unique_id", "title", "description", "poster_name",
              "follower_count", "tag_list", "is_image_or_video","image_src",
@@ -77,15 +79,16 @@ def run_infinite_post_data_loop():
 
             user_schema = ["ind","first_name","last_name","age","date_joined"]
 
-            schema_list = [pin_schema, geo_schema, user_schema]
             
         pin_payload = json.dumps({
             "records": [
                 {
-                #Data should be send as pairs of column_name:value, with different columns separated by commas       
-                "value": {"index": pin_result["index"], "unique_id": pin_result["unique_id"], "title": pin_result["title"], "description": pin_result["description"],
-                          "poster_name": pin_result["poster_name"], "follower_count": pin_result["follower_count"], "tag_list": pin_result["tag_list"], "is_image_or_video": pin_result["is_image_or_video"],
-                          "image_src": pin_result["image_src"], "downloaded": pin_result["downloaded"], "save_location": pin_result["save_location"], "category": pin_result["category"]}
+                    "value": {"index": pin_result["index"], "unique_id": pin_result["unique_id"], 
+                    "title": pin_result["title"], "description": pin_result["description"],
+                    "poster_name": pin_result["poster_name"], "follower_count": pin_result["follower_count"], 
+                    "tag_list": pin_result["tag_list"], "is_image_or_video": pin_result["is_image_or_video"],
+                    "image_src": pin_result["image_src"], "downloaded": pin_result["downloaded"], 
+                    "save_location": pin_result["save_location"], "category": pin_result["category"]}
                 }
             ]
         })
@@ -96,8 +99,9 @@ def run_infinite_post_data_loop():
         geo_payload = json.dumps({
             "records": [
                 {
-                #Data should be send as pairs of column_name:value, with different columns separated by commas       
-                "value": {"ind": geo_result["ind"], "timestamp": geo_result["timestamp"], "latitude": geo_result["latitude"], "longitude": geo_result["longitude"],
+               
+                "value": {"ind": geo_result["ind"], "timestamp": geo_result["timestamp"], 
+                          "latitude": geo_result["latitude"], "longitude": geo_result["longitude"], 
                           "country": geo_result["country"]}
                 }
             ]
@@ -107,31 +111,19 @@ def run_infinite_post_data_loop():
         
         user_payload = json.dumps({
             "records": [
-                {
-                #Data should be send as pairs of column_name:value, with different columns separated by commas       
-                "value": {"ind": user_result["ind"], "first_name": user_result["first_name"], "last_name": user_result["last_name"], "age": user_result["age"],
-                      "date_joined": user_result["date_joined"]}        
+                { 
+                "value": {"ind": user_result["ind"], "first_name": user_result["first_name"], 
+                "last_name": user_result["last_name"], "age": user_result["age"],
+                "date_joined": user_result["date_joined"]}        
                         }
             ]
         }, default=str)
 
 
         user_response = requests.request("POST", user_invoke_url, headers=headers, data=user_payload)
-        #print(f"Pin: {pin_response}")
-        #print(f"Geo: {geo_response}")
-        #print(f"User: {user_response}")    
-                          
-            # looped code is causing issues
-            #for result, schema, topic, invokeURL in zip(result_list, schema_list, topic_list, invokeURL_list): 
-            #    payload = json.dumps({"records": 
-            #                          [{"value": 
-            #                            {f"{topic}": result[i] for i in schema}}]}
-            #    , default=str)
-            #    #print(pin_result)
-            #    response = requests.request("POST", invokeURL, headers=headers, data=payload)
-            #    print(response.status_code)
-            
-
+        print(f"Pin: {pin_response}")
+        print(f"Geo: {geo_response}")
+        print(f"User: {user_response}")    
 
 
 if __name__ == "__main__":
