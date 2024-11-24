@@ -28,7 +28,7 @@ SSH Keypair ID: <ssh-keypair-id>
 
 `user_posting_emulation.py` : A provided py file that, when run, connects to a SQL database and outputs pin, geo and user data continuously until it is stopped. This has been modified to send data to an S3 bucket and output the API response rather than print the records.
 
-`databricks-code.ipynb` : Working code snippets from Databricks for importing data from S3 into seperate Dataframes, cleaning the data and performing the specified queries.
+`databricks-code.ipynb` : Working code snippets from Databricks for importing data from S3 into separate Dataframes, cleaning the data and performing the specified queries.
 
 `user-posting-emulation-streaming.py` : A modified version of 
 `user-posting-emulation.py`, which sends the data to Kinesis instead of an S3 bucket.
@@ -52,8 +52,7 @@ In order for everything to run smoothly, you should have the following (if you d
 - An EC2 client machine with Kafka installed (see [Setting up Kafka & Configuring for AWS IAM cluster authentication](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/EC2:-Setting-up-Kafka-&-Configuring-for-AWS-IAM-cluster-authentication))
 - A Custom MSK plugin (see [Creating a Custom MSK plugin](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/Creating-a-Custom-MSK-plugin))
 - An MSK connector for automatic saving to S3 from the MSK cluster (see [Creating an MSK connector](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/Creating-an-MSK-connector#creating-an-msk-connector))
-- An API (see [Creating an API with Kafka REST proxy integration method](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/API-Gateway:-Creating-an-API-with-Kafka-REST-proxy-integration-method))
-- A Kafka REST proxy integration method for the API (see [Creating a Kafka REST proxy integration method](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/Creating-a-Kafka-REST-proxy-integration-method))
+- An API with a proxy integration method(see [Creating an API with Kafka REST proxy integration method](https://github.com/Champney/Pinterest-Data-Pipeline-Project/wiki/API-Gateway:-Creating-an-API-with-Kafka-REST-proxy-integration-method))
 - A Databricks workspace
 - IAM roles with relevant access
 
