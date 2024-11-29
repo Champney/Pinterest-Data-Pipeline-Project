@@ -93,7 +93,9 @@ Now; from the command line, the user can simply execute either of the following 
 
 ![alt text](image-2.png)
 
+### Execution Workflow
 
+![alt text](CloudPinterestPipeline-1.png)
 
 ### License Information
 

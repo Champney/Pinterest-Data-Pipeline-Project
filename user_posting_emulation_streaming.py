@@ -28,6 +28,10 @@ class AWSDBConnector:
         self.aws_username = db_creds['AWS IAM Username'] 
         self.api_stage = 'a-zA-Z0-9_'
     def create_db_connector(self):
+        """
+        Uses .yaml credentials passed in from initializing the class to create a database connector 
+        that will connect to a SQL database
+        """
         engine = sqlalchemy.create_engine(f"mysql+pymysql://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}?charset=utf8mb4")
         return engine
 
@@ -36,6 +40,13 @@ new_connector = AWSDBConnector()
 
 
 def run_infinite_post_data_loop():
+    """
+    Selects a random integer between 0 and 11000, then uses the create_db_connector() method to connect
+    to the SQL database and retrieve the record that corresponds to the selected integer.
+    The record consists of pin, geo and user data. Once retrieved, the data is sent to corresponding Amazon 
+    Kinesis streams through an AWS API Gateway REST API using a PUT method where it can be read from.
+    This is executed continously on a loop until an error is encountered or a KeyboardInterrupt occurs.
+    """
     while True:
         sleep(random.randrange(0, 2))
         random_row = random.randint(0, 11000)

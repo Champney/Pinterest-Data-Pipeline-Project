@@ -8,17 +8,16 @@ import sqlalchemy
 from sqlalchemy import text
 import datetime
 import yaml
-random.seed(100)
-db_creds_path = 'db_creds.yaml'
-with open(db_creds_path, 'r') as file:
-    db_creds = yaml.safe_load(file)
-username = db_creds['AWS IAM Username']
+
 
 
 
 class AWSDBConnector:
-
+    """
+    When called or assigned to a variable, this will use credentials from
+    attached .yaml files create a database connector"""
     def __init__(self):
+
         aws_db_creds_path = 'aws_db_creds.yaml'
         with open(aws_db_creds_path, 'r') as file:
             aws_db_creds = yaml.safe_load(file)
@@ -31,8 +30,12 @@ class AWSDBConnector:
         with open(db_creds_path, 'r') as file:
             db_creds = yaml.safe_load(file)
         self.api_stage = 'a-zA-Z0-9_'
-        aws_username = db_creds['AWS IAM Username']
+        self.aws_username = db_creds['AWS IAM Username']
     def create_db_connector(self):
+        """
+        Uses .yaml credentials passed in from initializing the class to create a database connector 
+        that will connect to a SQL database
+        """
         engine = sqlalchemy.create_engine(f"mysql+pymysql://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}?charset=utf8mb4")
         return engine
 
@@ -41,6 +44,13 @@ new_connector = AWSDBConnector()
 
 
 def run_infinite_post_data_loop():
+    """
+    Selects a random integer between 0 and 11000, then uses the create_db_connector() method to connect
+    to the SQL database and retrieve the record that corresponds to the selected integer.
+    The record consists of pin, geo and user data. Once retrieved, the data is sent to the corresponding topics
+    in an AWS S3 bucket via an MSK Plugin-Connector pair and an API with a REST proxy.
+    This is executed continously on a loop until an error is encountered or a KeyboardInterrupt occurs.
+    """
     while True:
         sleep(random.randrange(0, 2))
         random_row = random.randint(0, 11000)
@@ -65,10 +75,10 @@ def run_infinite_post_data_loop():
             
             for row in user_selected_row:
                 user_result = dict(row._mapping)
-                       
-            pin_invoke_url = f"https://1yd64tc6fa.execute-api.us-east-1.amazonaws.com/{self.api_stage}/topics/{self.aws_username}.pin"
-            geo_invoke_url = f"https://1yd64tc6fa.execute-api.us-east-1.amazonaws.com/{self.api_stage}/topics/{self.aws_username}.geo"
-            user_invoke_url = f"https://1yd64tc6fa.execute-api.us-east-1.amazonaws.com/{self.api_stage}/topics/{self.aws_username}.user"
+                      
+            pin_invoke_url = f"https://1yd64tc6fa.execute-api.us-east-1.amazonaws.com/{new_connector.api_stage}/topics/{new_connector.aws_username}.pin"
+            geo_invoke_url = f"https://1yd64tc6fa.execute-api.us-east-1.amazonaws.com/{new_connector.api_stage}/topics/{new_connector.aws_username}.geo"
+            user_invoke_url = f"https://1yd64tc6fa.execute-api.us-east-1.amazonaws.com/{new_connector.api_stage}/topics/{new_connector.aws_username}.user"
             headers = {'Content-Type': 'application/vnd.kafka.json.v2+json'}
             
             pin_schema = ["index", "unique_id", "title", "description", "poster_name",
